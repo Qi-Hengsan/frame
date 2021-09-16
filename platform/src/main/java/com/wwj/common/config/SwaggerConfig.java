@@ -33,9 +33,9 @@ public class SwaggerConfig {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("大美游轮岸基管理系统-平台 api")
-                .description("大美游轮岸基管理系统-平台 api 文档")
-                .contact(new Contact("liaoli", "", "cquliaoli@gmail.com"))
+                .title("平台 api")
+                .description("平台 api 文档")
+                .contact(new Contact("wwj", "", "wangenjiezn@gmail.com"))
                 .version("1.0")
                 .build();
     }
