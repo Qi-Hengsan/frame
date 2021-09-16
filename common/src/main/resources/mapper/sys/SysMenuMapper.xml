@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwj.common.module.sys.mapper.SysMenuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wwj.common.module.sys.entity.SysMenu">
+        <id column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="title" property="title" />
+        <result column="level" property="level" />
+        <result column="sort" property="sort" />
+        <result column="name" property="name" />
+        <result column="icon" property="icon" />
+        <result column="hidden" property="hidden" />
+        <result column="path" property="path" />
+        <result column="menu_type" property="menuType" />
+        <result column="menu_auth" property="menuAuth" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, parent_id, title, level, sort, name, icon, hidden, path, menu_type, menu_auth,create_time,create_user,update_time,update_user
+    </sql>
+
+    <select id="getSysMenuById" resultType="com.wwj.common.module.sys.VO.query.SysMenuQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_menu where id = #{id}
+    </select>
+
+    <select id="getSysMenuPageList" parameterType="com.wwj.common.module.sys.param.SysMenuPageParam" resultType="com.wwj.common.module.sys.VO.query.SysMenuQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_menu
+    </select>
+
+    <select id="getAllMenu" resultType="com.wwj.common.module.sys.VO.query.SysMenuQueryVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            sys_menu a
+        ORDER BY
+            a.parent_id ASC,
+            a.`level` ASC,
+            a.sort ASC
+    </select>
+
+    <select id="getOprationLogSelect" resultType="com.wwj.common.module.sys.VO.OprationLogSelectVO">
+        SELECT
+        a.title AS 'label',
+        a.title AS 'value'
+        FROM
+        (
+        SELECT
+        d.*,
+        ( SELECT count( 1 ) FROM sys_menu dd WHERE dd.parent_id = d.id ) AS count
+        FROM
+        sys_menu d
+        ) a
+        WHERE
+        a.count = 0
+        AND a.parent_id != 0
+        ORDER BY
+        a.id,
+        a.`level`,
+        a.sort
+    </select>
+
+    <select id="getAllEndMenuIdForRole" resultType="integer">
+        SELECT
+            DISTINCT b.menu_id
+        FROM
+            sys_admin_role_relation a
+            LEFT JOIN sys_role_menu_relation b ON a.role_id = b.role_id
+        where
+         a.admin_id = #{userId}
+    </select>
+
+    <select id="getAllMenuIdForRole" resultType="com.wwj.common.module.sys.entity.SysMenu">
+        SELECT
+            *
+        FROM
+            sys_menu
+        WHERE
+            FIND_IN_SET(
+            id,
+            queryChildrenMenuInfo ( #{menuId} ))
+    </select>
+
+    <resultMap id="AllResourceRoleMap" extends="BaseResultMap" type="com.wwj.common.module.sys.VO.query.MenuRoleVO">
+        <collection property="roleList" columnPrefix="rl_" resultMap="com.wwj.common.module.sys.mapper.SysRoleMapper.BaseResultMap"></collection>
+    </resultMap>
+    <select id="getAllResourceRole" resultMap="AllResourceRoleMap">
+        SELECT
+            a.id,
+            a.title as name,
+            a.path ,
+            c.`name` as rl_name
+        FROM
+            sys_menu a
+            LEFT JOIN sys_role_menu_relation b ON a.id = b.menu_id
+            LEFT JOIN sys_role c ON b.role_id = c.id
+        WHERE
+            c.`name` IS NOT NULL
+        ORDER BY
+            a.id
+    </select>
+
+    <select id="getPermission" resultType="string">
+        SELECT
+            b.permission
+        FROM
+            sys_admin_role_relation a
+            LEFT JOIN sys_role_menu_relation b ON a.role_id = b.role_id
+        WHERE
+            a.admin_id = #{userId}
+            AND b.menu_id = #{menuId}
+            AND b.permission IS NOT NULL
+    </select>
+
+</mapper>

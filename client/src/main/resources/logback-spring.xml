@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--该日志将日志级别不同的log信息保存到不同的文件中 -->
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+	<springProperty scope="context" name="springAppName"
+		source="spring.application.name" />
+
+	<!-- 日志在工程中的输出位置 -->
+	<property name="log.path" value="./apps/log/${springAppName}" />
+	<!-- 从spring中获取配置，如获取不到会使用默认值 -->
+	<springProperty scope="context" name="LOG_HOME" source="logging.path"/>
+	<springProperty scope="context" name="LOG_LEVEL" source="logging.output.level"/>
+	<springProperty scope="context" name="LOG_MAX_SIZE" source="logging.file.max-size"/>
+	<springProperty scope="context" name="LOG_TOTAL_SIZE_CAP" source="logging.file.total-size-cap"/>
+	<springProperty scope="context" name="LOG_MAX_HISTORY" source="logging.file.max-history"/>
+
+	<!-- 控制台的日志输出样式 -->
+	<property name="CONSOLE_LOG_PATTERN"
+		value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
+
+	<!-- 控制台输出 -->
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<!-- 日志输出编码 -->
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf8</charset>
+		</encoder>
+	</appender>
+	<!-- 时间滚动输出 level为 INFO 日志 -->
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 正在记录的日志文件的路径及文件名 -->
+		<file>${log.path}/log_info.log</file>
+		<!--日志文件输出格式-->
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<!-- 日志记录器的滚动策略，按日期，按大小记录 -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- 每天日志归档路径以及格式 -->
+			<fileNamePattern>${log.path}/info/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!--日志文件保留天数-->
+			<maxHistory>15</maxHistory>
+		</rollingPolicy>
+		<!-- 此日志文件只记录info级别的 -->
+<!--		<filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--			<level>info</level>-->
+<!--		</filter>-->
+	</appender>
+
+
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<FileNamePattern>${log.path}/error/log-error-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<MaxHistory>${LOG_MAX_HISTORY:-30}</MaxHistory>
+			<MaxFileSize>${LOG_MAX_SIZE:-10MB}</MaxFileSize>
+			<totalSizeCap>${LOG_TOTAL_SIZE_CAP:-10GB}</totalSizeCap>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+		</encoder>
+
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${log.path}/log_warn.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<FileNamePattern>${log.path}/warn/log-warn-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<MaxHistory>${LOG_MAX_HISTORY:-30}</MaxHistory>
+			<MaxFileSize>${LOG_MAX_SIZE:-10MB}</MaxFileSize>
+			<totalSizeCap>${LOG_TOTAL_SIZE_CAP:-10GB}</totalSizeCap>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+		</encoder>
+		<!-- log filter -->
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>WARN</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- 为logstash输出的JSON格式的Appender -->
+	<!--<appender name="logstash"
+		class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+		<destination>192.168.1.99:9250</destination>
+		&lt;!&ndash; 日志输出编码 &ndash;&gt;
+		<encoder
+			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<timestamp>
+					<timeZone>UTC</timeZone>
+				</timestamp>
+				<pattern>
+					<pattern>
+						{
+						"severity": "%level",
+						"service": "${springAppName:-}",
+						"trace": "%X{X-B3-TraceId:-}",
+						"span": "%X{X-B3-SpanId:-}",
+						"ParentSpanId": "%X{X-B3-ParentSpanId:-}",
+						"exportable": "%X{X-Span-Export:-}",
+						"pid": "${PID:-}",
+						"thread": "%thread",
+						"class": "%logger{40}",
+						"rest": "%message"
+						}
+					</pattern>
+				</pattern>
+			</providers>
+		</encoder>
+	</appender>-->
+	<!--<logger name="com.ht"  level="INFO">-->
+		<!--<appender-ref ref="logstash" />-->
+	<!--</logger>-->
+	<!-- 日志输出级别 -->
+	<root level="INFO">
+		<appender-ref ref="console" />
+		<appender-ref ref="INFO_FILE" />
+		<appender-ref ref="WARN_FILE" />
+		<appender-ref ref="ERROR_FILE" />
+
+	</root>
+</configuration>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwj.common.module.sys.mapper.SysAdminMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, username, password, icon, id_card, sex, tel, name, note, login_time, status,create_time,create_user,update_time,update_user
+    </sql>
+
+    <select id="getSysAdminById" resultType="com.wwj.common.module.sys.VO.query.SysAdminQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin where id = #{id}
+    </select>
+
+    <select id="getSysAdminPageList" parameterType="com.wwj.common.module.sys.param.SysAdminPageParam"
+            resultType="com.wwj.common.module.sys.VO.query.SysAdminQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin
+        where 1=1
+        <if test="param.queryName != null and param.queryName != ''">
+            AND name like concat("%",#{param.queryName},"%")
+        </if>
+        <if test="param.queryRoleId != null and param.queryRoleId != ''">
+            and sys_admin.id in (select a.admin_id from sys_admin_role_relation a
+            left join sys_role b on a.role_id = b.id
+            where a.admin_id = sys_admin.id and b.id = #{param.queryRoleId})
+        </if>
+        ORDER BY CONVERT(name USING gbk) ASC
+    </select>
+    <select id="getUserNameById" resultType="java.lang.String">
+        select
+        username
+        from sys_admin where id = #{id}
+    </select>
+
+    <update id="updateStatus">
+        UPDATE sys_admin a
+        SET a.`status` = #{status}
+        WHERE
+            a.id = #{id}
+    </update>
+
+    <select id ="getSysAdminByIdCard" resultType="com.wwj.common.module.sys.VO.query.SysAdminQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin where id_card = #{idCard}
+    </select>
+
+    <select id="getName" resultType="java.lang.String">
+        select
+        a.name
+        from sys_admin a where a.id = #{userId}
+    </select>
+
+</mapper>

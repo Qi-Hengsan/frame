@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwj.common.module.sys.mapper.SysAdminLoginLogMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, admin_id, ip, address, user_agent,create_time,create_user,update_time,update_user
+    </sql>
+
+    <select id="getSysAdminLoginLogById" resultType="com.wwj.common.module.sys.VO.query.SysAdminLoginLogQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin_login_log where id = #{id}
+    </select>
+
+    <select id="getSysAdminLoginLogPageList" parameterType="com.wwj.common.module.sys.param.SysAdminLoginLogPageParam"
+            resultType="com.wwj.common.module.sys.VO.LoginLogVO">
+        SELECT
+            a.create_time as login_time,
+            b.username,
+            a.browser,
+            a.os,
+            a.ip
+        FROM
+            sys_admin_login_log a
+            LEFT JOIN sys_admin b ON a.admin_id = b.id
+        WHERE
+            1 = 1
+        <if test="param.userName != null and param.userName != ''">
+            AND b.username like concat("%", #{param.userName}, "%")
+        </if>
+        <if test="param.ip != null and param.ip != ''">
+            AND a.ip like concat("%", #{param.ip}, "%")
+        </if>
+        <if test="param.startTime != null and param.startTime != '' ">
+            AND DATE_FORMAT( a.create_time, '%Y-%m-%d' ) >= #{param.startTime}
+        </if>
+        <if test="param.endTime != null and param.endTime != '' ">
+            AND #{param.endTime} >= DATE_FORMAT( a.create_time, '%Y-%m-%d' )
+        </if>
+            order by a.create_time desc
+    </select>
+
+</mapper>

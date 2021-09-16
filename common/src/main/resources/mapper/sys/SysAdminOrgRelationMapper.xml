@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwj.common.module.sys.mapper.SysAdminOrgRelationMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, sys_admin_id, org_info_id, sort,create_time,create_user,update_time,update_user
+    </sql>
+
+    <select id="getSysAdminOrgRelationById" resultType="com.wwj.common.module.sys.VO.SysAdminOrgRelationQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin_org_relation where id = #{id}
+    </select>
+
+    <select id="getSysAdminOrgRelationPageList" parameterType="com.wwj.common.module.sys.param.SysAdminOrgRelationPageParam" resultType="com.wwj.common.module.sys.VO.SysAdminOrgRelationQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_admin_org_relation
+    </select>
+
+</mapper>

@@ -1,0 +1,76 @@
+package ${package.Service};
+
+import ${package.Entity}.${entity};
+#if(${cfg.generatorPageParam})
+//  ${cfg.pageParamClass}
+import ${cfg.PPC};
+#end
+import ${superServiceClassPackage};
+
+#if(${cfg.generatorQueryVO})
+    // ${cfg.queryVOClass}
+import ${cfg.QVOC};
+#end
+#if(${cfg.generatorStrategy} != 'SIMPLE')
+import ${cfg.pagingClass};
+#end
+import java.io.Serializable;
+/**
+ * $!{table.comment} 服务类
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+public interface ${table.serviceName} extends ${superServiceClass}<${entity}> {
+#if(${cfg.generatorStrategy} != 'SIMPLE')
+
+    /**
+     * 保存
+     *
+     * @param ${cfg.entityObjectName}
+     * @return
+     * @throws Exception
+     */
+    boolean save${entity}(${entity} ${cfg.entityObjectName}) throws Exception;
+
+    /**
+     * 修改
+     *
+     * @param ${cfg.entityObjectName}
+     * @return
+     * @throws Exception
+     */
+    boolean update${entity}(${entity} ${cfg.entityObjectName}) throws Exception;
+
+    /**
+     * 删除
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    boolean delete${entity}(Long id) throws Exception;
+
+    #if(${cfg.generatorStrategy} != 'SINGLE')
+    /**
+     * 根据ID获取查询对象
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    ${entity}${cfg.queryVO} get${entity}ById(Serializable id) throws Exception;
+    #end
+
+    /**
+     * 获取分页对象
+     *
+     * @param ${cfg.entityObjectName}${cfg.pageParam}
+     * @return
+     * @throws Exception
+     */
+    Paging<${entity}${cfg.queryVO}> get${entity}PageList(
+        ${entity}${cfg.pageParam} ${cfg.entityObjectName}${cfg.pageParam}) throws Exception;
+#end
+
+}

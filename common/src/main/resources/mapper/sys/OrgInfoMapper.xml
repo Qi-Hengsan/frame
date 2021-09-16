@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wwj.common.module.sys.mapper.OrgInfoMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, org_name, org_short, org_no, sort,parent_id, des, is_enable, update_user, update_time, create_user, create_time
+    </sql>
+
+    <select id="getOrgInfoById" resultType="com.wwj.common.module.sys.VO.query.OrgInfoQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info where id = #{id}
+    </select>
+
+    <select id="getOrgInfoPageList" parameterType="com.wwj.common.module.sys.param.OrgInfoPageParam" resultType="com.wwj.common.module.sys.VO.query.OrgInfoQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info
+    </select>
+
+    <select id="getOrgInfoList" resultType="com.wwj.common.module.sys.VO.query.OrgInfoQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info where is_enable=true
+    </select>
+
+    <select id="getOrgNameByOrgId" resultType="java.lang.String">
+        select org_name
+        from org_info where id = #{orgId}
+    </select>
+
+
+    <!--通过id查询组织结构信息-->
+    <select id="getOrgInfoVOById" resultType="com.wwj.common.module.sys.VO.OrgInfoVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info where id = #{id}
+    </select>
+    <!--  查询所有组织结构列表-->
+    <select id="getOrgInfoTree" resultType="com.wwj.common.module.sys.VO.OrgInfoVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info
+    </select>
+
+    <select id="getOrgIdByUserId" resultType="integer">
+        SELECT
+            a.org_info_id
+        FROM
+            sys_admin_org_relation a
+            LEFT JOIN org_info b ON a.org_info_id = b.id
+        WHERE
+            a.sys_admin_id = #{id}
+    </select>
+
+    <select id="getOrgInfoByChildId" resultType="com.wwj.common.module.sys.VO.query.OrgInfoQueryVO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+            org_info
+        WHERE
+            FIND_IN_SET(id,queryChildrenOrgInfo (#{id}))
+    </select>
+
+    <!--获取同一级别的最大编号-->
+    <select id ="getMaxOrgNoByParentId" resultType="java.lang.String">
+        select
+        max(org_no)
+        from
+        org_info o
+        where
+        o.parent_id = #{parentId}
+    </select>
+
+    <select id="getMainOrgByUserId" resultType="integer">
+        SELECT
+            a.org_info_id
+        FROM
+            sys_admin_org_relation a
+            LEFT JOIN org_info b ON a.org_info_id = b.id
+        WHERE
+            a.sys_admin_id = #{id} and a.sort = 0
+    </select>
+
+    <select id="getAllInfo" resultType="com.wwj.common.module.sys.VO.query.AllOrgInfoQueryVO">
+        select
+        id, org_name as name, org_short, org_no, sort,parent_id, des, is_enable, update_user, update_time, create_user, create_time
+        from org_info where is_enable=true
+    </select>
+
+    <select id="getOrgByChildId" resultType="com.wwj.common.module.sys.VO.query.AllOrgInfoQueryVO">
+        SELECT
+        id, org_name as name, org_short, org_no, sort,parent_id, des, is_enable, update_user, update_time, create_user, create_time
+        FROM
+        org_info
+        WHERE
+        FIND_IN_SET(id,queryChildrenOrgInfo (#{id}))
+    </select>
+
+    <!--判断当前组织单位是否被使用-->
+    <select id ="getOrgInfo4UsedOrNot" resultType="java.lang.Integer">
+        SELECT DISTINCT
+	    r.id
+        FROM
+	      org_info r,
+	      audit_config ac,
+	      sys_admin_org_relation sao
+        WHERE
+	      ( r.id = ac.org_id AND r.id = #{id} )
+	      OR ( r.id = sao.org_info_id AND r.id = #{id} )
+    </select>
+
+    <select id="getOrgInfoByParentId" resultType="com.wwj.common.module.sys.VO.query.OrgInfoQueryVO">
+        select
+        <include refid="Base_Column_List"/>
+        from org_info
+        where parent_id = #{id}
+    </select>
+
+</mapper>
