@@ -2,6 +2,7 @@ package com.wwj.common.module.teacher.controller;
 
 
 import com.wwj.common.module.teacher.VO.TeacherVO;
+import com.wwj.common.module.teacher.param.TeacherAddParam;
 import com.wwj.common.module.teacher.param.TeacherPageParam;
 import com.wwj.common.module.teacher.param.TeacherUpdateParam;
 import com.wwj.common.module.teacher.service.TeacherService;
@@ -39,10 +40,17 @@ public class TeacherController {
         return ApiResult.ok(vo.getId());
     }
 
-    @PutMapping("/updateStatus")
+    @PostMapping("/updateStatus")
     @ApiOperation(value = "修改状态")
     public ApiResult<?> updateStatus(@RequestBody TeacherUpdateParam param ){
         teacherService.batchUpdateStatus(param);
+        return ApiResult.ok("");
+    }
+
+    @PostMapping("/add")
+    @ApiOperation(value = "添加")
+    public ApiResult<?> add(@RequestBody TeacherAddParam param ){
+        teacherService.add(param);
         return ApiResult.ok("");
     }
 }

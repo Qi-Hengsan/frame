@@ -34,8 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    @Qualifier("agentDetailsService")
-    private UserDetailsService agentDetailsService;
+    @Qualifier("teacherDetailsService")
+    private UserDetailsService teacherDetailsService;
 
     @Value("${jwt.tokenHeader}")
     private String tokenHeader;
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (Objects.nonNull(userDetailsService.loadUserByUsername(userName))) {
                     userDetails = userDetailsService.loadUserByUsername(userName);
                 } else {
-                    userDetails = agentDetailsService.loadUserByUsername(userName);
+                    userDetails = teacherDetailsService.loadUserByUsername(userName);
                 }
                 if (userDetails != null) {
                     // 生成spring security通过的认证标识

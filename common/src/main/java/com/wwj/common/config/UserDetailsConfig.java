@@ -57,7 +57,7 @@ public class UserDetailsConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public UserDetailsService agentDetailsService() {
+    public UserDetailsService teacherDetailsService() {
         return userName -> teacherService.loadUserByUsername(userName);
     }
 
@@ -67,7 +67,7 @@ public class UserDetailsConfig extends WebSecurityConfigurerAdapter {
         DaoAuthenticationProvider userAuthenticationProvider = new DaoAuthenticationProvider();
         DaoAuthenticationProvider agentAuthenticationProvider = new DaoAuthenticationProvider();
         userAuthenticationProvider.setUserDetailsService(userDetailsService());
-        agentAuthenticationProvider.setUserDetailsService(agentDetailsService());
+        agentAuthenticationProvider.setUserDetailsService(teacherDetailsService());
         ProviderManager providerManager = new ProviderManager(userAuthenticationProvider, agentAuthenticationProvider);
         return providerManager;
     }

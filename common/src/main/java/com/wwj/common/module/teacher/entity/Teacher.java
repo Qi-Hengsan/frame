@@ -1,6 +1,7 @@
 package com.wwj.common.module.teacher.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.wwj.common.enums.EnabledEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -29,13 +30,8 @@ public class Teacher implements Serializable {
      * 教师名称
      */
     @ApiModelProperty(value="教师名称")
-    private String name;
-
-    /**
-     * 账号
-     */
-    @ApiModelProperty(value="账号")
     private String username;
+
 
     @ApiModelProperty(value = "密码")
     private String password;
@@ -59,7 +55,13 @@ public class Teacher implements Serializable {
     private String mail;
 
     /**
-     * 状态：0->禁用，1->启用
+     * 头像
+     */
+    @ApiModelProperty(value="头像")
+    private String icon;
+
+    /**
+     * 头像
      */
     @ApiModelProperty(value="状态：0->禁用，1->启用")
     private Integer status;
@@ -89,6 +91,12 @@ public class Teacher implements Serializable {
      */
     @ApiModelProperty(value="更新人")
     private String updateUser;
+
+    /**
+     * 是否启用
+     */
+    @ApiModelProperty(value="是否启用")
+    private EnabledEnum enabled;
 
     private static final long serialVersionUID = 1L;
 }

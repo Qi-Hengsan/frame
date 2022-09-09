@@ -12,12 +12,14 @@ import com.wwj.common.module.teacher.VO.TeacherVO;
 import com.wwj.common.module.teacher.domain.TeacherUserDetails;
 import com.wwj.common.module.teacher.entity.Teacher;
 import com.wwj.common.module.teacher.mapper.TeacherMapper;
+import com.wwj.common.module.teacher.param.TeacherAddParam;
 import com.wwj.common.module.teacher.param.TeacherPageParam;
 import com.wwj.common.module.teacher.param.TeacherUpdateParam;
 import com.wwj.common.module.teacher.service.TeacherService;
 import com.wwj.common.utils.PojoUtils;
 import com.wwj.core.pagination.Paging;
 import org.junit.platform.commons.util.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +28,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -53,7 +57,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         Page<Teacher> teacherPage = baseMapper.selectPage(new Page<>(query.getPageIndex(), query.getPageSize()),
                 Wrappers.<Teacher>lambdaQuery()
                         .eq(query.getStatus() != null, Teacher::getStatus, query.getStatus())
-                        .like(StringUtils.isNotBlank(query.getName()), Teacher::getName, query.getName())
+                        .like(StringUtils.isNotBlank(query.getName()), Teacher::getUsername, query.getName())
                         .eq(StringUtils.isNotBlank(query.getPhone()), Teacher::getPhone, query.getPhone()));
         IPage<TeacherVO> convert = PojoUtils.convert(teacherPage, TeacherVO.class);
         return new Paging<>(convert);
@@ -128,5 +132,15 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     @Override
     public void batchUpdateStatus(TeacherUpdateParam param) {
         baseMapper.batchUpdateStatus(param.getIds(),param.getStatus());
+    }
+
+    @Override
+    public void add(TeacherAddParam param) {
+        Teacher teacher = new Teacher();
+        BeanUtils.copyProperties(param, teacher);
+        teacher.setPassword(passwordEncoder.encode(param.getPassword()));
+        teacher.setCreateTime(LocalDateTime.now());
+        teacher.setStatus(1);
+        baseMapper.insert(teacher);
     }
 }

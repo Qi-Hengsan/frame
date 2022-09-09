@@ -3,6 +3,7 @@ package com.wwj.common.module.teacher.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wwj.common.module.teacher.domain.TeacherUserDetails;
 import com.wwj.common.module.teacher.entity.Teacher;
+import com.wwj.common.module.teacher.param.TeacherAddParam;
 import com.wwj.common.module.teacher.param.TeacherPageParam;
 import com.wwj.common.module.teacher.param.TeacherUpdateParam;
 import com.wwj.core.pagination.Paging;
@@ -49,4 +50,10 @@ public interface TeacherService extends IService<Teacher> {
      * @param param 参数
      */
     void batchUpdateStatus(TeacherUpdateParam param);
+
+    /**
+     * 添加教师
+     * @param param 参数
+     */
+    void add(TeacherAddParam param);
 }

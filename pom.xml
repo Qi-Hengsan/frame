@@ -46,6 +46,7 @@
         <druid.starter.version>1.2.6</druid.starter.version>
         <jackson.date.version>2.9.8</jackson.date.version>
         <okhttp.version>3.14.9</okhttp.version>
+        <mongoHelper.version>0.6.7</mongoHelper.version>
     </properties>
 
     <dependencyManagement>
@@ -216,6 +217,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
+            </dependency>
+            <!-- mongodb 增强工具 -->
+            <dependency>
+                <groupId>cn.craccd</groupId>
+                <artifactId>mongoHelper</artifactId>
+                <version>${mongoHelper.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

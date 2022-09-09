@@ -3,6 +3,7 @@ package com.wwj.common.module.teacher.VO;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.wwj.common.enums.EnabledEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -88,4 +89,7 @@ public class TeacherVO {
      */
     @ApiModelProperty(value="更新人")
     private String updateUser;
+
+    @ApiModelProperty(value="是否启用")
+    private EnabledEnum enabled;
 }

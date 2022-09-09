@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * @Date 2021/8/17 10:44
  * @author by ztsong
  */
-@RestControllerAdvice(basePackages = "com.httech.dmyl")
+@RestControllerAdvice(basePackages = "com.wwj.common")
 @Slf4j
 public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @Autowired
